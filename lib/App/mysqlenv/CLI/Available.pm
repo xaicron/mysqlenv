@@ -1,4 +1,4 @@
-package App::mysqlenv::CLI::Version;
+package App::mysqlenv::CLI::Available;
 
 use strict;
 use warnings;
@@ -12,5 +12,3 @@ sub run {
 }
 
 1;
-
-__END__

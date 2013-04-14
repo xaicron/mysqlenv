@@ -6,12 +6,15 @@ use warnings;
 use App::mysqlenv;
 use App::mysqlenv::CLI::Init;
 use App::mysqlenv::CLI::Help;
+use App::mysqlenv::CLI::Available;
 use App::mysqlenv::CLI::Install;
 use App::mysqlenv::CLI::List;
 use App::mysqlenv::CLI::Global;
+use App::mysqlenv::CLI::Local;
 use App::mysqlenv::CLI::Rehash;
 use App::mysqlenv::CLI::Exec;
 use App::mysqlenv::CLI::Version;
+use App::mysqlenv::CLI::Which;
 use App::mysqlenv::Logger;
 use App::mysqlenv::Getopt;
 

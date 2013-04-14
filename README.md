@@ -1,14 +1,16 @@
 # NAME
 
-App::mysqlenv - It's new $module
-
-# SYNOPSIS
-
-    use App::mysqlenv;
+App::mysqlenv - mysql binary manager
 
 # DESCRIPTION
 
-App::mysqlenv is ...
+See mysqlenv
+
+# SEE ALSO
+
+[plenv](http://search.cpan.org/perldoc?plenv)
+
+[rbenv](http://search.cpan.org/perldoc?rbenv)
 
 # LICENSE
 

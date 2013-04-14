@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "mysql binary manager",
    "author" : [
       "xaicron <xaicron@gmail.com>"
    ],

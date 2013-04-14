@@ -6,24 +6,7 @@ use warnings;
 our $VERSION = "0.01";
 
 our $DEBUG;
-our $MYSQLENV_HOME;
-
 sub debug { $DEBUG }
-
-sub home {
-    return $MYSQLENV_HOME if $MYSQLENV_HOME;
-
-    if ($ENV{MYSQLENV_HOME}) {
-        $MYSQLENV_HOME = $ENV{MYSQLENV_HOME};
-    }
-    elsif ($ENV{HOME}) {
-        $MYSQLENV_HOME = File::Spec->catdir($ENV{HOME}, ".mysqlenv");
-        $ENV{MYSQLENV_HOME} = $MYSQLENV_HOME;
-    }
-    else {
-        die "There is no ENV[MYSQLENV_HOME] or ENV[HOME]. Please set ENV[MYSQLENV_HOME].\n";
-    }
-}
 
 1;
 __END__

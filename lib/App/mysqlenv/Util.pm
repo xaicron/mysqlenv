@@ -10,7 +10,6 @@ use File::Path qw(mkpath rmtree);
 use File::Spec::Functions qw(catdir catfile canonpath rel2abs);
 use File::Slurp qw(write_file read_file);
 
-use App::mysqlenv ();
 use App::mysqlenv::Logger;
 
 our @EXPORT = qw{
@@ -38,7 +37,19 @@ our @EXPORT = qw{
 };
 
 sub mysqlenv_home {
-    canonpath(App::mysqlenv->home);
+    my $home;
+    if ($ENV{MYSQLENV_HOME}) {
+        $home = $ENV{MYSQLENV_HOME};
+    }
+    elsif ($ENV{HOME}) {
+        $home = catdir $ENV{HOME}, '.mysqlenv';
+        $ENV{MYSQLENV_HOME} = $home;
+    }
+    else {
+        die "There is no ENV[MYSQLENV_HOME] or ENV[HOME]. Please set ENV[MYSQLENV_HOME].\n";
+    }
+
+    $ENV{MYSQLENV_HOME} = canonpath $home;
 }
 
 sub install_home {

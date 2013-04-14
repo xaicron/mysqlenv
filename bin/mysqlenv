@@ -9,7 +9,7 @@ $fatpacked{"App/mysqlenv.pm"} = <<'APP_MYSQLENV';
 APP_MYSQLENV
 
 $fatpacked{"App/mysqlenv/CLI.pm"} = <<'APP_MYSQLENV_CLI';
-  package App::mysqlenv::CLI;use strict;use warnings;use App::mysqlenv;use App::mysqlenv::CLI::Init;use App::mysqlenv::CLI::Help;use App::mysqlenv::CLI::Install;use App::mysqlenv::CLI::List;use App::mysqlenv::CLI::Global;use App::mysqlenv::CLI::Rehash;use App::mysqlenv::CLI::Exec;use App::mysqlenv::CLI::Version;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub new {my$class=shift;bless {},$class}sub run {my ($self,@argv)=@_;@argv=@ARGV unless@argv;local$App::mysqlenv::DEBUG=0;local$App::mysqlenv::Logger::COLOR=-t STDOUT ? 1 : 0;my@commands;App::mysqlenv::Getopt->parse_options(\@argv=>('h|help'=>sub {unshift@commands,'help'},'debug!'=>\$App::mysqlenv::DEBUG,'color!'=>\$App::mysqlenv::Logger::COLOR,'version'=>\&show_version,),);push@commands,@argv;my$cmd=shift@commands || 'help';my$klass=sprintf 'App::mysqlenv::CLI::%s',join '',map {ucfirst $_}split '-',$cmd;unless (eval "require $klass; 1"){warnf("Could not find command '%s'\n",$cmd);exit 2}eval {$klass->run(@commands)};if (my$e=$@){errorf("%s\n",$e);exit 1}return 1}sub show_version {print "mysqlenv (App::mysqlenv) $App::mysqlenv::VERSION\n";exit 0}1;
+  package App::mysqlenv::CLI;use strict;use warnings;use App::mysqlenv;use App::mysqlenv::CLI::Init;use App::mysqlenv::CLI::Help;use App::mysqlenv::CLI::Install;use App::mysqlenv::CLI::List;use App::mysqlenv::CLI::Global;use App::mysqlenv::CLI::Rehash;use App::mysqlenv::CLI::Exec;use App::mysqlenv::CLI::Version;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub new {my$class=shift;bless {},$class}sub run {my ($self,@argv)=@_;@argv=@ARGV unless@argv;local$App::mysqlenv::DEBUG=0;local$App::mysqlenv::Logger::COLOR=-t STDOUT ? 1 : 0;my@commands;App::mysqlenv::Getopt->parse_options(\@argv=>('h|help'=>sub {unshift@commands,'help'},'debug!'=>\$App::mysqlenv::DEBUG,'color!'=>\$App::mysqlenv::Logger::COLOR,'V|version'=>\&show_version,),);push@commands,@argv;my$cmd=shift@commands || 'help';my$klass=sprintf 'App::mysqlenv::CLI::%s',join '',map {ucfirst $_}split '-',$cmd;unless (eval "require $klass; 1"){warnf("Could not find command '%s'\n",$cmd);exit 2}eval {$klass->run(@commands)};if (my$e=$@){errorf("%s\n",$e);exit 1}return 1}sub show_version {print "mysqlenv (App::mysqlenv) version $App::mysqlenv::VERSION\n";exit 0}1;
 APP_MYSQLENV_CLI
 
 $fatpacked{"App/mysqlenv/CLI/Exec.pm"} = <<'APP_MYSQLENV_CLI_EXEC';
@@ -69,7 +69,7 @@ $fatpacked{"App/mysqlenv/CLI/Rehash.pm"} = <<'APP_MYSQLENV_CLI_REHASH';
 APP_MYSQLENV_CLI_REHASH
 
 $fatpacked{"App/mysqlenv/CLI/SelfInstall.pm"} = <<'APP_MYSQLENV_CLI_SELFINSTALL';
-  package App::mysqlenv::CLI::SelfInstall;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$target=catdir mysqlenv_home,'bin','mysqlenv';my@files=read_file $0;write_file$target,read_file $0 or die "$!: $target";chmod 0755,$target or die "$!: $target";system$target,'init'}1;
+  package App::mysqlenv::CLI::SelfInstall;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$bindir=catdir mysqlenv_home,'bin';unless (-d $bindir){mkpath$bindir or die "$!: $bindir"}my$target=catfile$bindir,'mysqlenv';my@lines=read_file $0 or die "$!: $0";$lines[0]='#!/usr/bin/env perl';write_file$target,@lines or die "$!: $target";chmod 0755,$target or die "$!: $target";system$target,'init'}1;
 APP_MYSQLENV_CLI_SELFINSTALL
 
 $fatpacked{"App/mysqlenv/CLI/Version.pm"} = <<'APP_MYSQLENV_CLI_VERSION';

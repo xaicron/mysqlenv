@@ -7,10 +7,16 @@ use App::mysqlenv::Logger;
 
 sub run {
     my ($class, @args) = @_;
-    my $target = catdir mysqlenv_home, 'bin', 'mysqlenv';
+    my $bindir = catdir mysqlenv_home, 'bin';
+    unless (-d $bindir) {
+        mkpath $bindir or die "$!: $bindir";
+    }
 
-    my @files = read_file $0;
-    write_file $target, read_file $0 or die "$!: $target";
+    my $target = catfile $bindir, 'mysqlenv';
+    my @lines  = read_file $0 or die "$!: $0";
+    $lines[0]  = '#!/usr/bin/env perl'; # replace from #!perl
+
+    write_file $target, @lines or die "$!: $target";
 
     chmod 0755, $target or die "$!: $target";
 

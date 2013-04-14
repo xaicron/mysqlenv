@@ -2,8 +2,6 @@ package App::mysqlenv::CLI;
 
 use strict;
 use warnings;
-use Path::Tiny;
-use File::Which qw(which);
 use Getopt::Long;
 
 use App::mysqlenv;

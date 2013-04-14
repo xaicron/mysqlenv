@@ -11,5 +11,8 @@ on 'test' => sub {
 };
 
 on 'develop' => sub {
+    requires 'File::Slurp'  => '9999.19';
+    requires 'File::pushd'  => '1.005';
+    requires 'Getopt::Long' => '2.39';
 };
 

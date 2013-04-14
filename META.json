@@ -34,6 +34,9 @@
       },
       "develop" : {
          "requires" : {
+            "File::Slurp" : "9999.19",
+            "File::pushd" : "1.005",
+            "Getopt::Long" : "2.39",
             "Pod::Wordlist::hanekomu" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion" : "0.10108",
@@ -43,7 +46,7 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008005"
+            "perl" : "5.008001"
          }
       },
       "test" : {

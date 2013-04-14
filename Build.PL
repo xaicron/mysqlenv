@@ -27,7 +27,7 @@ my $builder = Module::Build->new(
     name        => 'App-mysqlenv',
     module_name => 'App::mysqlenv',
 
-    script_files => [glob('script/*'), glob('bin/*')],
+    script_files => [glob('bin/*')],
 
     test_files           => ((-d '.git' || $ENV{RELEASE_TESTING}) && -d 'xt') ? 't/ xt/' : 't/',
     recursive_test_files => 1,

@@ -19,11 +19,13 @@ my $fatpack = do {
         }
     };
 
-    find { wanted => $want, no_chdir => 1 }, 'fatlib', 'lib';
+    find { wanted => $want, no_chdir => 1 }, qw(fatlib lib);
     `fatpack file`;
 };
 
-write_file 'bin/mysqlenv', $fatpack;
+my @code = ($fatpack, read_file './script/mysqlenv.PL');
+
+write_file 'bin/mysqlenv', '#!perl', @code;
 chmod 0755, 'bin/mysqlenv';
 
 END {

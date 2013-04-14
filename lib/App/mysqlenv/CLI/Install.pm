@@ -43,6 +43,8 @@ You can try
 
 NOTE
 
+    system $0, 'rehash';
+
     return 1;
 }
 

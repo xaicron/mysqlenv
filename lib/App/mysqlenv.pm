@@ -11,19 +11,19 @@ sub debug { $DEBUG }
 1;
 __END__
 
-=encoding utf-8
-
 =head1 NAME
 
-App::mysqlenv - It's new $module
-
-=head1 SYNOPSIS
-
-    use App::mysqlenv;
+App::mysqlenv - mysql binary manager
 
 =head1 DESCRIPTION
 
-App::mysqlenv is ...
+See mysqlenv
+
+=head1 SEE ALSO
+
+L<< plenv >>
+
+L<< rbenv >>
 
 =head1 LICENSE
 

@@ -30,10 +30,10 @@ sub run {
     my @commands;
     App::mysqlenv::Getopt->parse_options(
         \@argv => (
-            'h|help'  => sub { unshift @commands, 'help' },
-            'debug!'  => \$App::mysqlenv::DEBUG,
-            'color!'  => \$App::mysqlenv::Logger::COLOR,
-            'version' => \&show_version,
+            'h|help'    => sub { unshift @commands, 'help' },
+            'debug!'    => \$App::mysqlenv::DEBUG,
+            'color!'    => \$App::mysqlenv::Logger::COLOR,
+            'V|version' => \&show_version,
         ),
     );
 
@@ -60,7 +60,7 @@ sub run {
 }
 
 sub show_version {
-    print "mysqlenv (App::mysqlenv) $App::mysqlenv::VERSION\n";
+    print "mysqlenv (App::mysqlenv) version $App::mysqlenv::VERSION\n";
     exit 0;
 }
 

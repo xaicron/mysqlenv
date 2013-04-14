@@ -5,8 +5,8 @@ use warnings;
 
 sub run {
     my ($class, @args) = @_;
-    my $module = $args[0] ? "App::mysqlenv::CLI::$args[0]" : 'App::mysqlenv';
-    system 'perldoc', $module;
+    my $target = $args[0] ? "App::mysqlenv::CLI::$args[0]" : 'mysqlenv';
+    system 'perldoc', $target;
 }
 
 1;

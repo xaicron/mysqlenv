@@ -2,7 +2,6 @@ package App::mysqlenv::CLI;
 
 use strict;
 use warnings;
-use Getopt::Long;
 
 use App::mysqlenv;
 use App::mysqlenv::CLI::Init;
@@ -14,6 +13,7 @@ use App::mysqlenv::CLI::Exec;
 use App::mysqlenv::CLI::Switch;
 use App::mysqlenv::CLI::Version;
 use App::mysqlenv::Logger;
+use App::mysqlenv::Getopt;
 
 sub new {
     my $class = shift;
@@ -28,13 +28,7 @@ sub run {
     local $App::mysqlenv::Logger::COLOR = -t STDOUT ? 1 : 0;
 
     my @commands;
-    my $parser = Getopt::Long::Parser->new(
-        config => [qw{
-            posix_default no_ignore_case
-            gnu_compat pass_through
-        }],
-    );
-    $parser->getoptionsfromarray(
+    App::mysqlenv::Getopt->parse_options(
         \@argv => (
             'h|help'  => sub { unshift @commands, 'help' },
             'debug!'  => \$App::mysqlenv::DEBUG,

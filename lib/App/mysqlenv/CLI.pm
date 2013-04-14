@@ -55,7 +55,9 @@ sub run {
         $klass->run(@commands);
     };
     if (my $e = $@) {
-        errorf("%s\n", $e);
+        unless (eval { $e->isa('App::mysqlenv::Exception') }) {
+            errorf("%s\n", $e)
+        }
         exit 1;
     }
 

@@ -5,9 +5,9 @@ use warnings;
 use parent 'Exporter';
 
 use Cwd qw(getcwd);
-use File::Basename qw(basename);
+use File::Basename qw(basename dirname);
 use File::Path qw(mkpath rmtree);
-use File::Spec::Functions qw(catdir catfile rel2abs);
+use File::Spec::Functions qw(catdir catfile canonpath rel2abs);
 use File::Slurp qw(write_file read_file);
 
 use App::mysqlenv ();
@@ -19,27 +19,74 @@ our @EXPORT = qw{
     catdir
     catfile
     rel2abs
+    canonpath
     basename
+    dirname
     getcwd
     write_file
     read_file
     command
     mysqlenv_home
     install_home
-    current_version
+    shims_path
+    detect_version
+    find_mysqlenv_version_file
+    find_lcoal_mysqlenv_version_file
+    find_global_mysqlenv_version_file
+    slurp_version
     show_usage
 };
 
 sub mysqlenv_home {
-    App::mysqlenv->home;
+    canonpath(App::mysqlenv->home);
 }
 
 sub install_home {
-    catdir mysqlenv_home(), 'mysqls';
+    canonpath catdir mysqlenv_home(), 'mysqls';
 }
 
-sub current_version {
-    $ENV{MYSQLENV_VERSION} || '-';
+sub shims_path {
+    canonpath catdir mysqlenv_home, 'shims';
+}
+
+sub detect_version {
+    return $ENV{MYSQLENV_VERSION} if $ENV{MYSQLENV_VERSION};
+    if (my $file = find_mysqlenv_version_file()) {
+        my $version = slurp_version($file);
+        return ($version, $file);
+    }
+    return undef;
+}
+
+sub find_mysqlenv_version_file {
+    find_lcoal_mysqlenv_version_file() || find_global_mysqlenv_version_file();
+}
+
+sub find_lcoal_mysqlenv_version_file {
+    my $dir = getcwd();
+    my %seen;
+    while (-d $dir) {
+        return undef if $seen{$dir}++; # for symlink
+        if (-f "$dir/.mysql-version") {
+            return "$dir/.mysql-version";
+        }
+        $dir = dirname $dir;
+    }
+
+    return undef;
+}
+
+sub find_global_mysqlenv_version_file {
+    my $mysqlenv_version_file = catfile mysqlenv_home(), 'version';
+    return $mysqlenv_version_file if -f $mysqlenv_version_file;
+    return undef;
+}
+
+sub slurp_version {
+    my $file = shift;
+    return unless -f $file;
+    my ($version) = read_file $file or die "$!: $file";
+    return $version;
 }
 
 sub command {

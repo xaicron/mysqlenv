@@ -9,7 +9,7 @@ sub run {
     my ($class, @argv) = @_;
     my $install_home = install_home;
 
-    my $current_version = current_version;
+    my ($current_version) = detect_version;
     chdir $install_home or die "$!: $install_home";
     opendir my $dh, '.' or die "$!: $install_home";
     for my $version (grep !/^\./ && -d, readdir $dh) {

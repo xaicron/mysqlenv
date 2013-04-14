@@ -14,7 +14,7 @@ sub run {
     mkdir $home or errorf "$!: $home" unless -d $home;
     chdir $home or errorf "$!: $home";
 
-    mkpath $_ for qw{ bin mysqls build etc };
+    mkpath $_ for qw{ bin mysqls etc shims };
     unless (-d 'mysql-build') {
         command 'git', 'clone', $MYSQLBUILD_REPOS, 'mysql-build';
     }
@@ -49,7 +49,7 @@ INSTRUCTION
 sub _BASHRC_CONTENT {
     my $home = mysqlenv_home;
     return << "ERC";
-export PATH=$home/bin:$home/mysql-build/bin:\$PATH
+export PATH=$home/bin:$home/shims:$home/mysql-build/bin:\$PATH
 ERC
 }
 

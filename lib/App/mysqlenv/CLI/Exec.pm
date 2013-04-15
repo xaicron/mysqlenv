@@ -16,10 +16,11 @@ sub run {
     }
     else {
         my $bindir = catdir install_home, $version, 'bin';
-        unless (-x catfile $bindir, $bin) {
-            errorf "[mysqlenv] $bin is not found in $bindir";
-        }
         $ENV{PATH} = join ':', $bindir, $ENV{PATH};
+    }
+
+    unless (which $bin) {
+        errorf '[mysqlenv] command not found: %s', $bin;
     }
 
     exec $bin, @args;

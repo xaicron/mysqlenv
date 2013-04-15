@@ -17,7 +17,7 @@ sub run {
         ),
     );
 
-    my $version = shift @args || show_usage('Install');
+    my $version = shift @args || show_usage('install');
 
     my $install_path = catdir $install_home, $as || $version;
     if (-d $install_path) {

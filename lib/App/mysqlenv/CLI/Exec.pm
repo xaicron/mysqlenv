@@ -7,7 +7,7 @@ use App::mysqlenv::Logger;
 
 sub run {
     my ($class, @args) = @_;
-    my $bin = shift @args || show_usage('Exec');
+    my $bin = shift @args || show_usage('exec');
 
     my $shims_path = shims_path;
     my ($version, $file) = detect_version;

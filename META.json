@@ -56,5 +56,16 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/xaicron/mysqlenv/issues"
+      },
+      "homepage" : "https://github.com/xaicron/mysqlenv",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/xaicron/mysqlenv.git",
+         "web" : "https://github.com/xaicron/mysqlenv"
+      }
+   },
    "version" : "0.01"
 }

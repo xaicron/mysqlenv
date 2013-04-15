@@ -34,6 +34,7 @@ our @EXPORT = qw{
     find_global_mysqlenv_version_file
     slurp_version
     show_usage
+    which
 };
 
 sub mysqlenv_home {
@@ -58,6 +59,18 @@ sub install_home {
 
 sub shims_path {
     canonpath catdir mysqlenv_home, 'shims';
+}
+
+sub which {
+    my ($bin, @path) = @_;
+    @path = File::Spec->path unless @path;
+    for my $dir (@path) {
+        my $fullpath = catfile $dir, $bin;
+        next unless -x $fullpath;
+        return $fullpath;
+    }
+
+    return undef;
 }
 
 sub detect_version {

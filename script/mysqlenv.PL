@@ -14,6 +14,7 @@ mysqlenv - mysq binary manager
 
 =head1 SYNOPSIS
 
+    # show usage
     mysqlenv help
 
     # list available mysql versions
@@ -23,7 +24,7 @@ mysqlenv - mysq binary manager
     mysqlenv install 5.6.10
 
     # execute command on current mysql
-    mysqlenv exec mysql -V
+    mysqlenv exec mysql -uroot test -e '...'
 
     # change global default mysql to 5.1.68
     mysqlenv global 5.1.68
@@ -35,7 +36,7 @@ mysqlenv - mysq binary manager
     mysqlenv rehash
 
     # locate a program file in the mysql's path
-    mysqlenv which cpanm
+    mysqlenv which mysqladmin
 
 =head1 DESCRIPTION
 
@@ -43,7 +44,24 @@ mysqlenv - mysq binary manager
 
 =head1 INSTALLATION
 
-...
+=head2 1. Install your system
+
+Run in your terminal the following:
+
+  curl -kL https://raw.github.com/xaicron/mysqlenv/master/script/mysqlenv-install | bash
+
+or
+
+  cpanm git://github.com/xaicron/mysqlenv.git
+  mysqlenv self-install
+
+And next, Setup the shell. You should run the following:
+
+  echo 'source ~/.mysqlenv/etc/bashrc' >> ~/.bashrc
+
+B<< NOTE: >> if you using C<< zsh >> then modify your ~/.zshrc .
+
+And restart your shell.
 
 =head1 BUG REPORTING
 

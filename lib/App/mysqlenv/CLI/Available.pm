@@ -7,8 +7,9 @@ use App::mysqlenv::Logger;
 
 sub run {
     my ($class, @argv) = @_;
-    # TODO
-    errorf 'Not implemeted';
+    system 'mysql-build', '--definitions' and die "$!";
+
+    return 1;
 }
 
 1;

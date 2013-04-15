@@ -20,4 +20,13 @@ sub run {
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Version - Show current mysql version
+
+=head1 SYNOPSIS
+
+    mysqlenv version
+

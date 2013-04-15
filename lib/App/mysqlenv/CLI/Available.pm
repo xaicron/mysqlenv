@@ -13,3 +13,14 @@ sub run {
 }
 
 1;
+
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Available - List available mysql versions
+
+=head1 SYNOPSIS
+
+    mysqlenv available
+

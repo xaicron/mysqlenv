@@ -24,3 +24,14 @@ sub run {
 }
 
 1;
+
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::SelfInstall - Install mysqlenv itself $MYSQLENV_HOME/bin
+
+=head1 SYNOPSIS
+
+    mysqlenv self-install
+

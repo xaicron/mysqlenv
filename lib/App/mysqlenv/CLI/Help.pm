@@ -12,6 +12,8 @@ sub run {
     my $verbose = 2;
 
     if ($command) {
+        $command = 'help' if $command =~ m/^-?-h(?:epl)?$/; # -h or --help
+
         my $suffix = join '', map { ucfirst $_ } split '-', $command;
         my $module = "App::mysqlenv::CLI::$suffix";
         unless (eval "require $module; 1") { ## no critic
@@ -31,4 +33,16 @@ sub run {
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Help - Provide help messages
+
+=head1 SYNOPSIS
+
+    mysqlenv help
+    mysqlenv help <command>
+    mysqlenv <command> -h
+    mysqlenv help -h
+

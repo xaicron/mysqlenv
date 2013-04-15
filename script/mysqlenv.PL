@@ -10,9 +10,15 @@ __END__
 
 =head1 NAME
 
-mysqlenv - mysq binary manager
+mysqlenv - MySQL environment manager
 
 =head1 SYNOPSIS
+
+mysqlenv command syntax:
+
+    mysqlenv <command> [options] [arguments]
+
+Commands:
 
     # show usage
     mysqlenv help
@@ -22,6 +28,9 @@ mysqlenv - mysq binary manager
 
     # install mysql binary
     mysqlenv install 5.6.10
+
+    # list installed mysqls
+    mysqlenv list
 
     # execute command on current mysql
     mysqlenv exec mysql -uroot test -e '...'
@@ -37,6 +46,18 @@ mysqlenv - mysq binary manager
 
     # locate a program file in the mysql's path
     mysqlenv which mysqladmin
+
+    # show current mysql version
+    mysqlenv version
+
+Generic command options:
+
+    -h, --help      Shortcut of `mysqlenv help`.
+    --version       Show mysqlenv version.
+
+See `mysqlenv help` for the full documentation of mysqlenv.
+
+See `mysqlenv help <command>` for detail description of the command.
 
 =head1 DESCRIPTION
 
@@ -55,7 +76,9 @@ or
   cpanm git://github.com/xaicron/mysqlenv.git
   mysqlenv self-install
 
-And next, Setup the shell. You should run the following:
+=head2 2. Setup your shell
+
+You should run the following:
 
   echo 'source ~/.mysqlenv/etc/bashrc' >> ~/.bashrc
 

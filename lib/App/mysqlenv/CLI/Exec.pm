@@ -29,4 +29,13 @@ sub run {
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Exec - Execute commands on current mysql environment
+
+=head1 SYNOPSIS
+
+    mysqlenv exec <command> [arguments]
+

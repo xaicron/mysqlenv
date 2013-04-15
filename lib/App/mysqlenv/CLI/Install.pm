@@ -50,4 +50,18 @@ NOTE
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Install - Build and install mysql binary
+
+=head1 SYNOPSIS
+
+    mysqlenv install <version> [options]
+
+=head1 OPTIONS
+
+    -v, --verbose       Chatty build log.
+        --as            Install the given version of MySQL by a name.
+

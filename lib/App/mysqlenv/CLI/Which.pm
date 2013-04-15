@@ -26,4 +26,13 @@ sub run {
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Which - Locate a program file int the mysqlenv's path
+
+=head1 SYNOPSIS
+
+    mysqlenv which <command>
+

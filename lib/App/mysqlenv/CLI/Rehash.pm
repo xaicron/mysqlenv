@@ -35,3 +35,14 @@ export MYSQLENV_HOME="%s"
 }
 
 1;
+
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::Rehash - Run this command after install, contains executable script.
+
+=head1 SYNOPSIS
+
+    mysqlenv rehash
+

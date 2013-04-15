@@ -41,8 +41,18 @@ sub run {
     );
 
     push @commands, @argv;
+    my $cmd = shift @commands || 'help';
 
-    my $cmd   = shift @commands || 'help';
+    # for <command> -h (wants more smart?)
+    App::mysqlenv::Getopt->parse_options(
+        \@commands, => (
+            'h|help' => sub {
+                unshift @commands, $cmd;
+                $cmd = 'help';
+            },
+        ),
+    );
+
     my $klass = sprintf 'App::mysqlenv::CLI::%s',
         join '', map { ucfirst $_ } split '-', $cmd;
 

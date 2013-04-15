@@ -26,4 +26,13 @@ sub run {
 
 1;
 
-__END__
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::List - List installed mysqls
+
+=head1 SYNOPSIS
+
+    mysqlenv list
+

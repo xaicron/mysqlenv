@@ -12,3 +12,14 @@ sub run {
 }
 
 1;
+
+__DATA__
+
+=head1 NAME
+
+App::mysqlenv::CLI::SelfInstall - Setes local mysql version under the directory
+
+=head1 SYNOPSIS
+
+    mysqlenv local <version>
+

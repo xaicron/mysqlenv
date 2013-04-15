@@ -9,23 +9,58 @@ $fatpacked{"App/mysqlenv.pm"} = <<'APP_MYSQLENV';
 APP_MYSQLENV
 
 $fatpacked{"App/mysqlenv/CLI.pm"} = <<'APP_MYSQLENV_CLI';
-  package App::mysqlenv::CLI;use strict;use warnings;use App::mysqlenv;use App::mysqlenv::CLI::Init;use App::mysqlenv::CLI::Help;use App::mysqlenv::CLI::Available;use App::mysqlenv::CLI::Install;use App::mysqlenv::CLI::List;use App::mysqlenv::CLI::Global;use App::mysqlenv::CLI::Local;use App::mysqlenv::CLI::Rehash;use App::mysqlenv::CLI::Exec;use App::mysqlenv::CLI::Version;use App::mysqlenv::CLI::Which;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub new {my$class=shift;bless {},$class}sub run {my ($self,@argv)=@_;@argv=@ARGV unless@argv;local$App::mysqlenv::DEBUG=0;local$App::mysqlenv::Logger::COLOR=-t STDOUT ? 1 : 0;my@commands;App::mysqlenv::Getopt->parse_options(\@argv=>('h|help'=>sub {unshift@commands,'help'},'debug!'=>\$App::mysqlenv::DEBUG,'color!'=>\$App::mysqlenv::Logger::COLOR,'V|version'=>\&show_version,),);push@commands,@argv;my$cmd=shift@commands || 'help';my$klass=sprintf 'App::mysqlenv::CLI::%s',join '',map {ucfirst $_}split '-',$cmd;unless (eval "require $klass; 1"){warnf("Could not find command '%s'\n",$cmd);exit 2}eval {$klass->run(@commands)};if (my$e=$@){unless (eval {$e->isa('App::mysqlenv::Exception')}){errorf("%s\n",$e)}exit 1}return 1}sub show_version {print "mysqlenv (App::mysqlenv) version $App::mysqlenv::VERSION\n";exit 0}1;
+  package App::mysqlenv::CLI;use strict;use warnings;use App::mysqlenv;use App::mysqlenv::CLI::Init;use App::mysqlenv::CLI::Help;use App::mysqlenv::CLI::Available;use App::mysqlenv::CLI::Install;use App::mysqlenv::CLI::List;use App::mysqlenv::CLI::Global;use App::mysqlenv::CLI::Local;use App::mysqlenv::CLI::Rehash;use App::mysqlenv::CLI::Exec;use App::mysqlenv::CLI::Version;use App::mysqlenv::CLI::Which;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub new {my$class=shift;bless {},$class}sub run {my ($self,@argv)=@_;@argv=@ARGV unless@argv;local$App::mysqlenv::DEBUG=0;local$App::mysqlenv::Logger::COLOR=-t STDOUT ? 1 : 0;my@commands;App::mysqlenv::Getopt->parse_options(\@argv=>('h|help'=>sub {unshift@commands,'help'},'debug!'=>\$App::mysqlenv::DEBUG,'color!'=>\$App::mysqlenv::Logger::COLOR,'V|version'=>\&show_version,),);push@commands,@argv;my$cmd=shift@commands || 'help';App::mysqlenv::Getopt->parse_options(\@commands,=>('h|help'=>sub {unshift@commands,$cmd;$cmd='help'},),);my$klass=sprintf 'App::mysqlenv::CLI::%s',join '',map {ucfirst $_}split '-',$cmd;unless (eval "require $klass; 1"){warnf("Could not find command '%s'\n",$cmd);exit 2}eval {$klass->run(@commands)};if (my$e=$@){unless (eval {$e->isa('App::mysqlenv::Exception')}){errorf("%s\n",$e)}exit 1}return 1}sub show_version {print "mysqlenv (App::mysqlenv) version $App::mysqlenv::VERSION\n";exit 0}1;
 APP_MYSQLENV_CLI
 
 $fatpacked{"App/mysqlenv/CLI/Available.pm"} = <<'APP_MYSQLENV_CLI_AVAILABLE';
-  package App::mysqlenv::CLI::Available;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;
+  package App::mysqlenv::CLI::Available;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;system 'mysql-build','--definitions' and die "$!";return 1}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Available - List available mysql versions
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv available
+  
 APP_MYSQLENV_CLI_AVAILABLE
 
 $fatpacked{"App/mysqlenv/CLI/Exec.pm"} = <<'APP_MYSQLENV_CLI_EXEC';
-  package App::mysqlenv::CLI::Exec;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$bin=shift@args || show_usage('Exec');my$shims_path=shims_path;my ($version,$file)=detect_version;unless ($version){$ENV{PATH}=join ':',grep {canonpath($_)ne $shims_path}File::Spec->path}else {my$bindir=catdir install_home,$version,'bin';unless (-x catfile$bindir,$bin){errorf "[mysqlenv] $bin is not found in $bindir"}$ENV{PATH}=join ':',$bindir,$ENV{PATH}}exec$bin,@args;die $!}1;
+  package App::mysqlenv::CLI::Exec;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$bin=shift@args || show_usage('exec');my$shims_path=shims_path;my ($version,$file)=detect_version;unless ($version){$ENV{PATH}=join ':',grep {canonpath($_)ne $shims_path}File::Spec->path}else {my$bindir=catdir install_home,$version,'bin';$ENV{PATH}=join ':',$bindir,$ENV{PATH}}unless (which$bin){errorf '[mysqlenv] command not found: %s',$bin}exec$bin,@args;die $!}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Exec - Execute commands on current mysql environment
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv exec <command> [arguments]
+  
 APP_MYSQLENV_CLI_EXEC
 
 $fatpacked{"App/mysqlenv/CLI/Global.pm"} = <<'APP_MYSQLENV_CLI_GLOBAL';
-  package App::mysqlenv::CLI::Global;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$version_file=find_global_mysqlenv_version_file;my$global_version='';unless (-f $version_file){$global_version='no set'}else {$global_version=slurp_version($version_file)}my$new_version=shift@argv;if (!$new_version || $global_version eq $new_version){print "$global_version\n";exit}unless (-d catdir install_home,$new_version){errorf "$new_version was not found"}write_file$version_file,$new_version;return 1}1;
+  package App::mysqlenv::CLI::Global;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$version_file=find_global_mysqlenv_version_file;my$global_version='';if ($version_file && -f $version_file){$global_version=slurp_version($version_file)}my$new_version=shift@argv;unless ($new_version || $global_version){show_usage('global')}if (!$new_version || $global_version eq $new_version){print "$global_version\n";exit}unless (-d catdir install_home,$new_version){errorf "$new_version was not found"}write_file$version_file,$new_version;return 1}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Global - Change global mysql version
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv global <version>
+  
 APP_MYSQLENV_CLI_GLOBAL
 
 $fatpacked{"App/mysqlenv/CLI/Help.pm"} = <<'APP_MYSQLENV_CLI_HELP';
-  package App::mysqlenv::CLI::Help;use strict;use warnings;sub run {my ($class,@args)=@_;my$target=$args[0]? "App::mysqlenv::CLI::$args[0]" : 'mysqlenv';system 'perldoc',$target}1;
+  package App::mysqlenv::CLI::Help;use strict;use warnings;use Pod::Usage qw(pod2usage);use App::mysqlenv::Logger;sub run {my ($class,$command)=@_;my$target=$0;my$verbose=2;if ($command){$command='help' if$command =~ m/^-?-h(?:epl)?$/;my$suffix=join '',map {ucfirst $_}split '-',$command;my$module="App::mysqlenv::CLI::$suffix";unless (eval "require $module; 1"){errorf '[mysqlenv] command not implemented: %s',$command}no strict 'refs';$target=\*{"$module\::DATA"};$verbose=1}pod2usage(-verbose=>$verbose,-input=>$target,)}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Help - Provide help messages
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv help
+      mysqlenv help <command>
+      mysqlenv <command> -h
+      mysqlenv help -h
+  
 APP_MYSQLENV_CLI_HELP
 
 $fatpacked{"App/mysqlenv/CLI/Init.pm"} = <<'APP_MYSQLENV_CLI_INIT';
@@ -46,25 +81,54 @@ $fatpacked{"App/mysqlenv/CLI/Init.pm"} = <<'APP_MYSQLENV_CLI_INIT';
 APP_MYSQLENV_CLI_INIT
 
 $fatpacked{"App/mysqlenv/CLI/Install.pm"} = <<'APP_MYSQLENV_CLI_INSTALL';
-  package App::mysqlenv::CLI::Install;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub run {my ($class,@args)=@_;my$install_home=install_home;App::mysqlenv::Getopt->parse_options(\@args=>('v|verbose!'=>\my$verbose,'--as=s'=>\my$as,),);my$version=shift@args || show_usage('Install');my$install_path=catdir$install_home,$as || $version;if (-d $install_path){errorf '%s is exists',$install_path}command 'mysql-build',($verbose ? '-v' : ()),$version,$install_path,(@args ? ('--',@args): ()),;chdir$install_path or die "$!: $install_path";command './scripts/mysql_install_db';infof 'Successfully install!';print << "NOTE";system $0,'rehash';return 1}1;
+  package App::mysqlenv::CLI::Install;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;use App::mysqlenv::Getopt;sub run {my ($class,@args)=@_;my$install_home=install_home;App::mysqlenv::Getopt->parse_options(\@args=>('v|verbose!'=>\my$verbose,'--as=s'=>\my$as,),);my$version=shift@args || show_usage('install');my$install_path=catdir$install_home,$as || $version;if (-d $install_path){errorf '%s is exists',$install_path}command 'mysql-build',($verbose ? '-v' : ()),$version,$install_path,(@args ? ('--',@args): ()),;chdir$install_path or die "$!: $install_path";command './scripts/mysql_install_db';infof 'Successfully install!';print << "NOTE";system $0,'rehash';return 1}1;__DATA__ 
   
   You can try
   
   \$ mysqlenv global $version
   
   NOTE
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Install - Build and install mysql binary
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv install <version> [options]
+  
+  =head1 OPTIONS
+  
+      -v, --verbose       Chatty build log.
+          --as            Install the given version of MySQL by a name.
+  
 APP_MYSQLENV_CLI_INSTALL
 
 $fatpacked{"App/mysqlenv/CLI/List.pm"} = <<'APP_MYSQLENV_CLI_LIST';
-  package App::mysqlenv::CLI::List;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$install_home=install_home;my ($current_version)=detect_version;chdir$install_home or die "$!: $install_home";opendir my$dh,'.' or die "$!: $install_home";for my$version (grep!/^\./ && -d,readdir$dh){if ($version eq $current_version){print "* $version\n"}else {print "  $version\n"}}return 1}1;
+  package App::mysqlenv::CLI::List;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$install_home=install_home;my ($current_version)=detect_version;chdir$install_home or die "$!: $install_home";opendir my$dh,'.' or die "$!: $install_home";for my$version (grep!/^\./ && -d,readdir$dh){if ($version eq $current_version){print "* $version\n"}else {print "  $version\n"}}return 1}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::List - List installed mysqls
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv list
+  
 APP_MYSQLENV_CLI_LIST
 
 $fatpacked{"App/mysqlenv/CLI/Local.pm"} = <<'APP_MYSQLENV_CLI_LOCAL';
-  package App::mysqlenv::CLI::Local;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;
+  package App::mysqlenv::CLI::Local;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::SelfInstall - Setes local mysql version under the directory
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv local <version>
+  
 APP_MYSQLENV_CLI_LOCAL
 
 $fatpacked{"App/mysqlenv/CLI/Rehash.pm"} = <<'APP_MYSQLENV_CLI_REHASH';
-  package App::mysqlenv::CLI::Rehash;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$mysqlenv_home=mysqlenv_home;my$install_home=install_home;my$shims=catdir mysqlenv_home,'shims';my%seen;for my$bin (map {basename $_}grep {-x $_}glob("$install_home/*/bin/*")){next if$seen{$bin}++;my$shimbin=catfile$shims,$bin;my$cmd=sprintf q{exec "%s" exec "$program" "$@"},rel2abs($0);write_file$shimbin,sprintf(<<'...',$mysqlenv_home,$cmd);chmod 0755,$shimbin or die "$!: $shimbin"}return 1}1;
+  package App::mysqlenv::CLI::Rehash;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$mysqlenv_home=mysqlenv_home;my$install_home=install_home;my$shims=catdir mysqlenv_home,'shims';my%seen;for my$bin (map {basename $_}grep {-x $_}glob("$install_home/*/bin/*")){next if$seen{$bin}++;my$shimbin=catfile$shims,$bin;my$cmd=sprintf q{exec "%s" exec "$program" "$@"},rel2abs($0);write_file$shimbin,sprintf(<<'...',$mysqlenv_home,$cmd);chmod 0755,$shimbin or die "$!: $shimbin"}return 1}1;__DATA__ 
   #!/usr/bin/env bash
   set -e
   [ -n "$MYSQLENV_DEBUG" ] && set -x
@@ -74,18 +138,50 @@ $fatpacked{"App/mysqlenv/CLI/Rehash.pm"} = <<'APP_MYSQLENV_CLI_REHASH';
   export MYSQLENV_HOME="%s"
   %s
   ...
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Rehash - Run this command after install, contains executable script.
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv rehash
+  
 APP_MYSQLENV_CLI_REHASH
 
 $fatpacked{"App/mysqlenv/CLI/SelfInstall.pm"} = <<'APP_MYSQLENV_CLI_SELFINSTALL';
-  package App::mysqlenv::CLI::SelfInstall;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$bindir=catdir mysqlenv_home,'bin';unless (-d $bindir){mkpath$bindir or die "$!: $bindir"}my$target=catfile$bindir,'mysqlenv';my@lines=read_file $0 or die "$!: $0";$lines[0]='#!/usr/bin/env perl';write_file$target,@lines or die "$!: $target";chmod 0755,$target or die "$!: $target";system$target,'init'}1;
+  package App::mysqlenv::CLI::SelfInstall;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@args)=@_;my$bindir=catdir mysqlenv_home,'bin';unless (-d $bindir){mkpath$bindir or die "$!: $bindir"}my$target=catfile$bindir,'mysqlenv';my@lines=read_file $0 or die "$!: $0";$lines[0]='#!/usr/bin/env perl';write_file$target,@lines or die "$!: $target";chmod 0755,$target or die "$!: $target";system$target,'init'}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::SelfInstall - Install mysqlenv itself $MYSQLENV_HOME/bin
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv self-install
+  
 APP_MYSQLENV_CLI_SELFINSTALL
 
 $fatpacked{"App/mysqlenv/CLI/Version.pm"} = <<'APP_MYSQLENV_CLI_VERSION';
-  package App::mysqlenv::CLI::Version;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;
+  package App::mysqlenv::CLI::Version;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my ($current_version,$file)=detect_version;unless ($current_version){errorf '[mysqlenv] Could not detect mysql version.'}print "$current_version (set by $file)";return 1}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Version - Show current mysql version
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv version
+  
 APP_MYSQLENV_CLI_VERSION
 
 $fatpacked{"App/mysqlenv/CLI/Which.pm"} = <<'APP_MYSQLENV_CLI_WHICH';
-  package App::mysqlenv::CLI::Which;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;
+  package App::mysqlenv::CLI::Which;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$bin=shift@argv || show_usage('which');my ($version,$file)=detect_version();my$shims_path=shims_path;my@path=grep {canonpath($_)ne $shims_path}File::Spec->path;if (my$fullpath=which$bin,@path){print "$fullpath\n"}else {errorf '[mysqlenv] command not found: %s',$bin}return 1}1;__DATA__ 
+  =head1 NAME
+  
+  App::mysqlenv::CLI::Which - Locate a program file int the mysqlenv's path
+  
+  =head1 SYNOPSIS
+  
+      mysqlenv which <command>
+  
 APP_MYSQLENV_CLI_WHICH
 
 $fatpacked{"App/mysqlenv/Exception.pm"} = <<'APP_MYSQLENV_EXCEPTION';
@@ -101,7 +197,7 @@ $fatpacked{"App/mysqlenv/Logger.pm"} = <<'APP_MYSQLENV_LOGGER';
 APP_MYSQLENV_LOGGER
 
 $fatpacked{"App/mysqlenv/Util.pm"} = <<'APP_MYSQLENV_UTIL';
-  package App::mysqlenv::Util;use strict;use warnings;use parent 'Exporter';use Cwd qw(getcwd);use File::Basename qw(basename dirname);use File::Path qw(mkpath rmtree);use File::Spec::Functions qw(catdir catfile canonpath rel2abs);use File::Slurp qw(write_file read_file);use App::mysqlenv::Logger;our@EXPORT=qw{mkpath rmtree catdir catfile rel2abs canonpath basename dirname getcwd write_file read_file command mysqlenv_home install_home shims_path detect_version find_mysqlenv_version_file find_lcoal_mysqlenv_version_file find_global_mysqlenv_version_file slurp_version show_usage};sub mysqlenv_home {my$home;if ($ENV{MYSQLENV_HOME}){$home=$ENV{MYSQLENV_HOME}}elsif ($ENV{HOME}){$home=catdir$ENV{HOME},'.mysqlenv';$ENV{MYSQLENV_HOME}=$home}else {die "There is no ENV[MYSQLENV_HOME] or ENV[HOME]. Please set ENV[MYSQLENV_HOME].\n"}$ENV{MYSQLENV_HOME}=canonpath$home}sub install_home {canonpath catdir mysqlenv_home(),'mysqls'}sub shims_path {canonpath catdir mysqlenv_home,'shims'}sub detect_version {return$ENV{MYSQLENV_VERSION}if$ENV{MYSQLENV_VERSION};if (my$file=find_mysqlenv_version_file()){my$version=slurp_version($file);return ($version,$file)}return undef}sub find_mysqlenv_version_file {find_lcoal_mysqlenv_version_file()|| find_global_mysqlenv_version_file()}sub find_lcoal_mysqlenv_version_file {my$dir=getcwd();my%seen;while (-d $dir){return undef if$seen{$dir}++;if (-f "$dir/.mysql-version"){return "$dir/.mysql-version"}$dir=dirname$dir}return undef}sub find_global_mysqlenv_version_file {my$mysqlenv_version_file=catfile mysqlenv_home(),'version';return$mysqlenv_version_file if -f $mysqlenv_version_file;return undef}sub slurp_version {my$file=shift;return unless -f $file;my ($version)=read_file$file or die "$!: $file";return$version}sub command {my@commands=@_;infof 'run: %s',join ' ',@_;!system(@_)or die "$?"}sub show_usage {require App::mysqlenv::CLI::Help;App::mysqlenv::CLI::Help->run(@_);exit 1}1;
+  package App::mysqlenv::Util;use strict;use warnings;use parent 'Exporter';use Cwd qw(getcwd);use File::Basename qw(basename dirname);use File::Path qw(mkpath rmtree);use File::Spec::Functions qw(catdir catfile canonpath rel2abs);use File::Slurp qw(write_file read_file);use App::mysqlenv::Logger;our@EXPORT=qw{mkpath rmtree catdir catfile rel2abs canonpath basename dirname getcwd write_file read_file command mysqlenv_home install_home shims_path detect_version find_mysqlenv_version_file find_lcoal_mysqlenv_version_file find_global_mysqlenv_version_file slurp_version show_usage which};sub mysqlenv_home {my$home;if ($ENV{MYSQLENV_HOME}){$home=$ENV{MYSQLENV_HOME}}elsif ($ENV{HOME}){$home=catdir$ENV{HOME},'.mysqlenv';$ENV{MYSQLENV_HOME}=$home}else {die "There is no ENV[MYSQLENV_HOME] or ENV[HOME]. Please set ENV[MYSQLENV_HOME].\n"}$ENV{MYSQLENV_HOME}=canonpath$home}sub install_home {canonpath catdir mysqlenv_home(),'mysqls'}sub shims_path {canonpath catdir mysqlenv_home,'shims'}sub which {my ($bin,@path)=@_;@path=File::Spec->path unless@path;for my$dir (@path){my$fullpath=catfile$dir,$bin;next unless -x $fullpath;return$fullpath}return undef}sub detect_version {return$ENV{MYSQLENV_VERSION}if$ENV{MYSQLENV_VERSION};if (my$file=find_mysqlenv_version_file()){my$version=slurp_version($file);return ($version,$file)}return undef}sub find_mysqlenv_version_file {find_lcoal_mysqlenv_version_file()|| find_global_mysqlenv_version_file()}sub find_lcoal_mysqlenv_version_file {my$dir=getcwd();my%seen;while (-d $dir){return undef if$seen{$dir}++;if (-f "$dir/.mysql-version"){return "$dir/.mysql-version"}$dir=dirname$dir}return undef}sub find_global_mysqlenv_version_file {my$mysqlenv_version_file=catfile mysqlenv_home(),'version';return$mysqlenv_version_file if -f $mysqlenv_version_file;return undef}sub slurp_version {my$file=shift;return unless -f $file;my ($version)=read_file$file or die "$!: $file";return$version}sub command {my@commands=@_;infof 'run: %s',join ' ',@_;!system(@_)or die "$?"}sub show_usage {require App::mysqlenv::CLI::Help;App::mysqlenv::CLI::Help->run(@_);exit 1}1;
 APP_MYSQLENV_UTIL
 
 $fatpacked{"File/Path.pm"} = <<'FILE_PATH';
@@ -175,10 +271,17 @@ __END__
 
 =head1 NAME
 
-mysqlenv - mysq binary manager
+mysqlenv - MySQL environment manager
 
 =head1 SYNOPSIS
 
+mysqlenv command syntax:
+
+    mysqlenv <command> [options] [arguments]
+
+Commands:
+
+    # show usage
     mysqlenv help
 
     # list available mysql versions
@@ -187,8 +290,11 @@ mysqlenv - mysq binary manager
     # install mysql binary
     mysqlenv install 5.6.10
 
+    # list installed mysqls
+    mysqlenv list
+
     # execute command on current mysql
-    mysqlenv exec mysql -V
+    mysqlenv exec mysql -uroot test -e '...'
 
     # change global default mysql to 5.1.68
     mysqlenv global 5.1.68
@@ -200,7 +306,19 @@ mysqlenv - mysq binary manager
     mysqlenv rehash
 
     # locate a program file in the mysql's path
-    mysqlenv which cpanm
+    mysqlenv which mysqladmin
+
+    # show current mysql version
+    mysqlenv version
+
+Generic command options:
+
+    -h, --help      Shortcut of `mysqlenv help`.
+    --version       Show mysqlenv version.
+
+See `mysqlenv help` for the full documentation of mysqlenv.
+
+See `mysqlenv help <command>` for detail description of the command.
 
 =head1 DESCRIPTION
 
@@ -208,7 +326,26 @@ mysqlenv - mysq binary manager
 
 =head1 INSTALLATION
 
-...
+=head2 1. Install your system
+
+Run in your terminal the following:
+
+  curl -kL https://raw.github.com/xaicron/mysqlenv/master/script/mysqlenv-install | bash
+
+or
+
+  cpanm git://github.com/xaicron/mysqlenv.git
+  mysqlenv self-install
+
+=head2 2. Setup your shell
+
+You should run the following:
+
+  echo 'source ~/.mysqlenv/etc/bashrc' >> ~/.bashrc
+
+B<< NOTE: >> if you using C<< zsh >> then modify your ~/.zshrc .
+
+And restart your shell.
 
 =head1 BUG REPORTING
 

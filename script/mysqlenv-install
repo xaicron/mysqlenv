@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+MYSQLENV_URL=https://raw.github.com/xaicron/mysqlenv/master/bin/mysqlenv
+
+if [ -z "$TMPDIR" ]; then
+    if [ -d "/tmp" ]; then
+        TMPDIR="/tmp"
+    else
+        TMPDIR="."
+    fi
+fi
+
+cd $TMPDIR || exit 1
+
+LOCALINSTALLER="mysqlenv-$$"
+
+if type curl > /dev/null 2>&1; then
+    DOWNLOADER="curl -k -f -sS -Lo $LOCALINSTALLER $MYSQLENV_URL"
+elif type fetch > /dev/null 2>&1; then
+    DOWNLOADER="fetch -o $LOCALINSTALLER $MYSQLENV_URL"
+elif type wget > /dev/null 2>&1; then
+    DOWNLOADER="wget --no-check-certificate -nv -O $LOCALINSTALLER $MYSQLENV_URL"
+elif type lwp-download > /dev/null 2>&1; then
+    DOWNLOADER="lwp-download $LOCALINSTALLER $MYSQLENV_URL"
+else
+  echo "Need wget or curl or lwp-download to use $0"
+  exit 1
+fi
+
+clean_exit() {
+    [ -f $LOCALINSTALLER ] && rm $LOCALINSTALLER
+    exit $1;
+}
+
+echo "## Download the latest mysqlenv"
+$DOWNLOADER || clean_exit 1
+
+echo "## Installing mysqlenv"
+chmod +x $LOCALINSTALLER
+perl $LOCALINSTALLER self-install || clean_exit 1
+
+echo "## Done."
+clean_exit 0;

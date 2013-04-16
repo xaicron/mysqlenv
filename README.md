@@ -45,9 +45,9 @@ Generic command options:
     -h, --help      Shortcut of `mysqlenv help`.
     --version       Show mysqlenv version.
 
-See \`mysqlenv help\` for the full documentation of mysqlenv.
+See `mysqlenv help` for the full documentation of mysqlenv.
 
-See \`mysqlenv help <command>\` for detail description of the command.
+See `mysqlenv help <command>` for detail description of the command.
 
 # DESCRIPTION
 

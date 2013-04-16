@@ -61,7 +61,7 @@ See C<< mysqlenv help <command> >> for detail description of the command.
 
 =head1 DESCRIPTION
 
-...
+MySQL A-GO!GO!
 
 =head1 INSTALLATION
 

@@ -29,6 +29,7 @@ sub run {
         errorf "$new_version was not found";
     }
 
+    $version_file ||= catfile mysqlenv_home, 'version';
     write_file $version_file, $new_version;
 
     return 1;

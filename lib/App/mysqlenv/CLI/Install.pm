@@ -58,7 +58,7 @@ App::mysqlenv::CLI::Install - Build and install mysql binary
 
 =head1 SYNOPSIS
 
-    mysqlenv install <version> [options]
+    mysqlenv install [options] <version> [arguments]
 
 =head1 OPTIONS
 

@@ -44,5 +44,5 @@ App::mysqlenv::CLI::Global - Change global mysql version
 
 =head1 SYNOPSIS
 
-    mysqlenv global <version>
+    mysqlenv global [version]
 

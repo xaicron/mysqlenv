@@ -44,7 +44,7 @@ $fatpacked{"App/mysqlenv/CLI/Global.pm"} = <<'APP_MYSQLENV_CLI_GLOBAL';
   
   =head1 SYNOPSIS
   
-      mysqlenv global <version>
+      mysqlenv global [version]
   
 APP_MYSQLENV_CLI_GLOBAL
 
@@ -94,7 +94,7 @@ $fatpacked{"App/mysqlenv/CLI/Install.pm"} = <<'APP_MYSQLENV_CLI_INSTALL';
   
   =head1 SYNOPSIS
   
-      mysqlenv install <version> [options]
+      mysqlenv install [options] <version> [arguments]
   
   =head1 OPTIONS
   
@@ -116,14 +116,14 @@ $fatpacked{"App/mysqlenv/CLI/List.pm"} = <<'APP_MYSQLENV_CLI_LIST';
 APP_MYSQLENV_CLI_LIST
 
 $fatpacked{"App/mysqlenv/CLI/Local.pm"} = <<'APP_MYSQLENV_CLI_LOCAL';
-  package App::mysqlenv::CLI::Local;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;errorf 'Not implemeted'}1;__DATA__ 
+  package App::mysqlenv::CLI::Local;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;sub run {my ($class,@argv)=@_;my$version=shift@argv;if ($version){unless (-d catfile install_home,$version){errorf '[mysqlenv] %s is not installed',$version}write_file '.mysql-version',$version}else {if (my$file=find_lcoal_mysqlenv_version_file){print slurp_version($file),"\n"}else {errorf '[mysqlenv] no local version configured for this directory'}}return 1}1;__DATA__ 
   =head1 NAME
   
   App::mysqlenv::CLI::SelfInstall - Setes local mysql version under the directory
   
   =head1 SYNOPSIS
   
-      mysqlenv local <version>
+      mysqlenv local [version]
   
 APP_MYSQLENV_CLI_LOCAL
 
@@ -316,9 +316,9 @@ Generic command options:
     -h, --help      Shortcut of `mysqlenv help`.
     --version       Show mysqlenv version.
 
-See `mysqlenv help` for the full documentation of mysqlenv.
+See C<< mysqlenv help >> for the full documentation of mysqlenv.
 
-See `mysqlenv help <command>` for detail description of the command.
+See C<< mysqlenv help <command> >> for detail description of the command.
 
 =head1 DESCRIPTION
 

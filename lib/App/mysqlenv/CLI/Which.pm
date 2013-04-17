@@ -14,6 +14,8 @@ sub run {
     my $shims_path = shims_path;
     my @path = grep { canonpath($_) ne $shims_path } File::Spec->path;
 
+    unshift @path, bin_path $version if $version;
+
     if (my $fullpath = which $bin, @path) {
         print "$fullpath\n";
     }

@@ -28,6 +28,7 @@ our @EXPORT = qw{
     mysqlenv_home
     install_home
     shims_path
+    bin_path
     detect_version
     find_mysqlenv_version_file
     find_lcoal_mysqlenv_version_file
@@ -59,6 +60,11 @@ sub install_home {
 
 sub shims_path {
     canonpath catdir mysqlenv_home, 'shims';
+}
+
+sub bin_path {
+    my $version = shift;
+    canonpath catdir install_home, $version, 'bin';
 }
 
 sub which {

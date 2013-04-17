@@ -64,7 +64,7 @@ $fatpacked{"App/mysqlenv/CLI/Help.pm"} = <<'APP_MYSQLENV_CLI_HELP';
 APP_MYSQLENV_CLI_HELP
 
 $fatpacked{"App/mysqlenv/CLI/Init.pm"} = <<'APP_MYSQLENV_CLI_INIT';
-  package App::mysqlenv::CLI::Init;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;my$MYSQLBUILD_REPOS='git://github.com/kamipo/mysql-build.git';sub run {my ($class,@args)=@_;my$home=mysqlenv_home;mkdir$home or errorf "$!: $home" unless -d $home;chdir$home or errorf "$!: $home";mkpath $_ for qw{bin mysqls etc shims};unless (-d 'mysql-build'){command 'git','clone',$MYSQLBUILD_REPOS,'mysql-build'}my$etc=catdir$home,'etc';chdir$etc or errorf "$!: $etc";for my$data (['bashrc'=>'_BASHRC_CONTENT' ],){my ($file,$method)=@$data;write_file$file,$class->$method or die "$!: $etc/$file"}print << "INSTRUCTION";return 1}sub _BASHRC_CONTENT {my$home=mysqlenv_home;return << "ERC"}1;
+  package App::mysqlenv::CLI::Init;use strict;use warnings;use App::mysqlenv::Util;use App::mysqlenv::Logger;my$MYSQLBUILD_REPOS='https://github.com/kamipo/mysql-build.git';sub run {my ($class,@args)=@_;my$home=mysqlenv_home;mkdir$home or errorf "$!: $home" unless -d $home;chdir$home or errorf "$!: $home";mkpath $_ for qw{bin mysqls etc shims};unless (-d 'mysql-build'){command 'git','clone',$MYSQLBUILD_REPOS,'mysql-build'}my$etc=catdir$home,'etc';chdir$etc or errorf "$!: $etc";for my$data (['bashrc'=>'_BASHRC_CONTENT' ],){my ($file,$method)=@$data;write_file$file,$class->$method or die "$!: $etc/$file"}print << "INSTRUCTION";return 1}sub _BASHRC_CONTENT {my$home=mysqlenv_home;return << "ERC"}1;
   
   mysqlenv is initialized ($home).
   

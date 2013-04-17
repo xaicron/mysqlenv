@@ -5,7 +5,7 @@ use warnings;
 use App::mysqlenv::Util;
 use App::mysqlenv::Logger;
 
-my $MYSQLBUILD_REPOS = 'git://github.com/kamipo/mysql-build.git';
+my $MYSQLBUILD_REPOS = 'https://github.com/kamipo/mysql-build.git';
 
 sub run {
     my ($class, @args) = @_;

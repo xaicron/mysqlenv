@@ -13,7 +13,7 @@ sub run {
         errorf '[mysqlenv] Could not detect mysql version.';
     }
 
-    print "$current_version (set by $file)";
+    print "$current_version (set by $file)\n";
 
     return 1;
 }

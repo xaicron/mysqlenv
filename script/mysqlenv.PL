@@ -88,7 +88,7 @@ And restart your shell.
 
 =head1 BUG REPORTING
 
-Plese use github issues: L<< http://github.com/xaicron/mysqlenv/ >>.
+Plese use github issues: L<< https://github.com/xaicron/mysqlenv/issues >>.
 
 =head1 LICENSE
 

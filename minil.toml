@@ -1,1 +1,2 @@
 readme_from = "script/mysqlenv.PL"
+script_files = [ "glob('bin/*')" ]

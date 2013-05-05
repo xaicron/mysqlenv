@@ -51,7 +51,7 @@ See `mysqlenv help <command>` for detail description of the command.
 
 # DESCRIPTION
 
-...
+MySQL A-GO!GO!
 
 # INSTALLATION
 
@@ -78,7 +78,7 @@ And restart your shell.
 
 # BUG REPORTING
 
-Plese use github issues: [http://github.com/xaicron/mysqlenv/](http://github.com/xaicron/mysqlenv/).
+Plese use github issues: [https://github.com/xaicron/mysqlenv/issues](https://github.com/xaicron/mysqlenv/issues).
 
 # LICENSE
 

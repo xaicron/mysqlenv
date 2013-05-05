@@ -59,7 +59,7 @@ MySQL A-GO!GO!
 
 Run in your terminal the following:
 
-    curl -kL https://raw.github.com/xaicron/mysqlenv/master/script/mysqlenv-install | bash
+    curl -kL http://bit.ly/mysqlenv | bash
 
 or
 

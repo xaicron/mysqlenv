@@ -23,8 +23,9 @@ my %args = (
         'Module::Build' => 0.38,
     },
 
-    name        => 'App-mysqlenv',
-    module_name => 'App::mysqlenv',
+    name            => 'App-mysqlenv',
+    module_name     => 'App::mysqlenv',
+    allow_pure_perl => 0,
 
     script_files => [glob('bin/*')],
 

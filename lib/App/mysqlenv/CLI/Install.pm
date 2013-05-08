@@ -31,7 +31,13 @@ sub run {
     ;
 
     chdir $install_path or die "$!: $install_path";
-    command './scripts/mysql_install_db';
+    my ($mysql_install_db) = glob('*/mysql_install_db');
+    unless ($mysql_install_db) {
+        warnf '`mysql_install_db` not found';
+    }
+    else {
+        command $mysql_install_db;
+    }
 
     infof 'Successfully install!';
 

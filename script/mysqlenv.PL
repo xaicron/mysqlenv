@@ -50,6 +50,9 @@ Commands:
     # show current mysql version
     mysqlenv version
 
+    # upgrade itself
+    mysqlenv self-upgrade
+
 Generic command options:
 
     -h, --help      Shortcut of `mysqlenv help`.

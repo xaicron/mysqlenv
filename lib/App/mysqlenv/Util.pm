@@ -36,6 +36,8 @@ our @EXPORT = qw{
     slurp_version
     show_usage
     which
+    http_get_command
+    http_get
 };
 
 sub mysqlenv_home {
@@ -129,6 +131,28 @@ sub show_usage {
     require App::mysqlenv::CLI::Help;
     App::mysqlenv::CLI::Help->run(@_);
     exit 1;
+}
+
+sub http_get_command {
+    my $http_get_command;
+    if (which 'curl') {
+        $http_get_command = 'curl -kfsSL';
+    }
+    elsif (which 'wget') {
+        $http_get_command = 'wget -O -';
+    }
+    else {
+        errorf '`curl` or `wget` command  should be installed.';
+    }
+
+    $http_get_command;
+}
+
+sub http_get {
+    my ($url) = @_;
+    my $http_get_command = http_get_command();
+    my $devnull = File::Spec->devnull;
+    `$http_get_command $url 2> $devnull`;
 }
 
 1;

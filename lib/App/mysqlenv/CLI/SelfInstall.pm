@@ -14,7 +14,7 @@ sub run {
 
     my $target = catfile $bindir, 'mysqlenv';
     my @lines  = read_file $0 or die "$!: $0";
-    $lines[0]  = '#!/usr/bin/env perl'; # replace from #!perl
+    $lines[0]  = "#!/usr/bin/env perl\n"; # replace from #!perl
 
     write_file $target, @lines or die "$!: $target";
 
